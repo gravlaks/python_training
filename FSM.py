@@ -34,8 +34,12 @@ class FSM:
             entry_states = parameters["entry_states"] 
             end_state = parameters["end_state"]
             periodic = parameters["periodic"]
+            trace_dependent = parameters["trace_dependent"]
 
             if self.current_state in entry_states:
+                
+                if trace_dependent:
+                    args = (*args, self.trace)
 
                 if periodic:
                     if timer.timeout():
