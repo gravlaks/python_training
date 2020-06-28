@@ -1,8 +1,9 @@
 from Timer import Timer
 class FSM:
 
-    def __init__(self,tasks, init_state="init"):
+    def __init__(self,tasks, trace, init_state="init"):
         self.tasks = tasks
+        self.trace = trace
         self.current_state = init_state
 
 

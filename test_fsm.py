@@ -36,7 +36,8 @@ def main():
     task_when_second_state_config = {"fnc": foo, "args": ("Now in second_state", ), "periodic": False, "execution_time": 0, "entry_states":("second_state"), "end_state": "second_state"}
     tasks = {"task_1":task_1_config, "task_2": task_2_config, "task_3": task_3_config}
 
-    fsm = FSM(tasks)
+    trace = ""
+    fsm = FSM(tasks, trace)
 
     while True:
         fsm.run()
