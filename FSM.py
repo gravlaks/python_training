@@ -17,42 +17,50 @@ class FSM:
             if not periodic:
                 execution_time = parameters["execution_time"]
                 self.tasks[task_key]["timer"] = Timer(execution_time)
-                self.tasks[task_key]["done"] = False
+                self.tasks[task_key]["is_done"] = False
 
 
         
 
     def run(self):
 
-        while True:
+# Iterate all tasks and find out which ones should be run
+        for task, parameters in self.tasks.items():
 
-            for task, parameters in self.tasks.items():
-                fnc = parameters["fnc"]
-                
-                args = parameters["args"]
-                timer = parameters["timer"]
-                entry_states = parameters["entry_states"] 
-                end_state = parameters["end_state"]
+            fnc = parameters["fnc"]
+            args = parameters["args"]
+            timer = parameters["timer"]
+            entry_states = parameters["entry_states"] 
+            end_state = parameters["end_state"]
+            periodic = parameters["periodic"]
 
-                periodic = parameters["periodic"]
+            if self.current_state in entry_states:
 
-                if self.current_state in entry_states:
-                    if periodic:
-                        if timer.timeout():
-                            if end_state =="return_value":
-                                self.current_state = fnc(*args)
-                            else:
-                                fnc(*args)
-                                self.current_state = end_state
-                            timer.reset()
-                    else:
-                        done = parameters["done"]
-                        if timer.timeout() and not done:
-                            parameters["done"] = True
-                            if end_state =="return_value":
-                                self.current_state = fnc(*args)
-                            else:
-                                fnc(*args)
-                                self.current_state = end_state
-                
+                if periodic:
+                    if timer.timeout():
+                        timer.reset()
+                        if end_state =="return_value":
+                            self.current_state = fnc(*args)
+                        elif end_state == "no_change":
+                            fnc(*args)
+                            pass
+                        else:
+
+                            fnc(*args)
+                            self.current_state = end_state
+
+                else: #task should only be done once
+
+                    is_done = parameters["is_done"]
+                    if timer.timeout() and not is_done:
+                        parameters["is_done"] = True
+                        if end_state =="return_value":
+                            self.current_state = fnc(*args)
+                        elif end_state == "no_change":
+                            fnc(*args)
+                            pass
+                        else:
+                            fnc(*args)
+                            self.current_state = end_state
+            
 
